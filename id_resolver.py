@@ -4,8 +4,6 @@ from operator import itemgetter
 
 
 
-
-
 rootdir = 'config'
 configs = []
 
@@ -16,8 +14,6 @@ for root, subFolders, files in os.walk(rootdir):
             configs.append(os.path.join(root, x))
 configs.append("config/TinkersWorkshop.txt")
 configs.remove("config/EE3/EE3.cfg")
-
-
 
 
 
@@ -44,8 +40,6 @@ def build_list(regex_string, open_file, config_name):
 
 
 
-
-
 def replace_ids(object_name, buffer_amount, id_object, this_config):
     if object_name != []:
         for x in sorted(object_name, key=itemgetter(1)):
@@ -59,8 +53,6 @@ def replace_ids(object_name, buffer_amount, id_object, this_config):
         while id_object % buffer_amount != 0:
             id_object += 1
     return this_config, id_object
-
-
 
 
 
@@ -92,7 +84,7 @@ for config in sorted(configs, key=itemgetter(2)):
     elif config == "config/AdvancedSolarPanel.cfg":
         blocks = build_list("block", open_config, config)
         items = build_list("items", open_config, config)
-    elif config == "config/TinkersWorkshop.txt": #killmdiyo()
+    elif config == "config/TinkersWorkshop.txt":
         blocks = build_list("block", open_config, config)
         items = build_list("item", open_config, config)
         for equipable in build_list("equipables", open_config, config):
