@@ -1,0 +1,18 @@
+WARNING!!! Please only run this script on a brand new server. In its current state it would wreak havoc on anything but a new server.
+
+
+
+How to use:
+
+Place id_resolver.py in your server directory. 
+Run "python id_resolver.py"
+
+
+
+Explanation of the output:
+
+The first section of output displays all the files the script could not find a match in, as well as what type of match it was looking for.
+
+The next section is a CSV ready output of the ID blocks that were handed out to the configs. If a section is blank that means the script was unable to find an ID section to rewrite.
+
+The last section just displays the last IDs that were handed out.
