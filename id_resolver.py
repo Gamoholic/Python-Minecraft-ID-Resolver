@@ -10,10 +10,11 @@ configs = []
 # Super mega sexy file list generator
 for root, subFolders, files in os.walk(rootdir):
     for x in files:
-        if x.endswith('cfg') or x.endswith('conf'):
-            configs.append(os.path.join(root, x))
-configs.append("config/TinkersWorkshop.txt")
-configs.remove("config/EE3/EE3.cfg")
+        if x != 'EE3.cfg':
+            if x.endswith('cfg') or x.endswith('conf'):
+                configs.append(os.path.join(root, x))
+            if x == 'TinkersWorkshop.txt':
+                configs.append(os.path.join(root, x))
 
 
 
