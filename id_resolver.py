@@ -41,21 +41,16 @@ def build_list(regex_string, open_file, config_name):
 
 
 
-def replace_ids(object_name, buffer_amount, id_object, this_config):
+def replace_ids(object_name, buffer_amount, round_amount, id_object, this_config):
     if object_name != []:
         for x in sorted(object_name, key=itemgetter(1)):
             original = x[0] + '=' + str(x[1])
             replacement = x[0] + '=' + str(id_object)
             this_config = re.sub(original, replacement, this_config)
             id_object += 1
-        # Just in case the ID number lands on the buffer boundary
-        if id_object % buffer_amount == 0:
-            id_object += 1
-        # Make sure there is enough space between mods
-        if id_object % buffer_amount < buffer_amount:
-            id_object += buffer_amount
-        # Pad the ID number
-        while id_object % buffer_amount != 0:
+        id_object += buffer_amount
+        # Round the ID number
+        while id_object % round_amount != 0:
             id_object += 1
     return this_config, id_object
 
@@ -67,7 +62,9 @@ items = []
 id_block = 1000
 id_item = 10000
 buffer_block = 20
-buffer_item = 300
+buffer_item = 255
+round_block = 20
+round_item = 100
 range_list = []
 
 print "Configs to check:"
@@ -76,7 +73,7 @@ print
 for config in sorted(configs, key=itemgetter(2)):
     the_open_config = open(config, 'rU')
     open_config = the_open_config.read()
-    
+
     if config == "config/OpenPeripheral.cfg":
         blocks = build_list("blocks", open_config, config)
         items = build_list("items", open_config, config)
@@ -108,9 +105,9 @@ for config in sorted(configs, key=itemgetter(2)):
     id_item_start = id_item
     
     if blocks != []:
-        open_config, id_block = replace_ids(blocks, buffer_block, id_block, open_config)
+        open_config, id_block = replace_ids(blocks, buffer_block, round_block, id_block, open_config)
     if items != []:
-        open_config, id_item = replace_ids(items, buffer_item, id_item, open_config)
+        open_config, id_item = replace_ids(items, buffer_item, round_item, id_item, open_config)
     
     if id_block_start == id_block:
         range_list_block = ""
@@ -134,4 +131,4 @@ for x in range_list:
 print
 print "Last block ID used:", id_block
 print "Last item ID used: ", id_item
-    
+
