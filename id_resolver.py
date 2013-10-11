@@ -48,8 +48,13 @@ def replace_ids(object_name, buffer_amount, id_object, this_config):
             replacement = x[0] + '=' + str(id_object)
             this_config = re.sub(original, replacement, this_config)
             id_object += 1
+        # Just in case the ID number lands on the buffer boundary
         if id_object % buffer_amount == 0:
             id_object += 1
+        # Make sure there is enough space between mods
+        if id_object % buffer_amount < buffer_amount:
+            id_object += buffer_amount
+        # Pad the ID number
         while id_object % buffer_amount != 0:
             id_object += 1
     return this_config, id_object
@@ -62,7 +67,7 @@ items = []
 id_block = 1000
 id_item = 10000
 buffer_block = 20
-buffer_item = 100
+buffer_item = 300
 range_list = []
 
 print "Configs to check:"
