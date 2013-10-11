@@ -46,7 +46,6 @@ def replace_ids(object_name, buffer_amount, id_object, this_config):
         for x in sorted(object_name, key=itemgetter(1)):
             original = x[0] + '=' + str(x[1])
             replacement = x[0] + '=' + str(id_object)
-            if original.endswith("4000"): print original, replacement
             this_config = re.sub(original, replacement, this_config)
             id_object += 1
         if id_object % buffer_amount == 0:
