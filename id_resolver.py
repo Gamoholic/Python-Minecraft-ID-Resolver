@@ -6,14 +6,16 @@ from operator import itemgetter
 
 rootdir = 'config'
 configs = []
+exceptions_exclude = ['EE3.cfg']
+exceptions_include = ['TinkersWorkshop.txt']
 
 # Super mega sexy file list generator
 for root, subFolders, files in os.walk(rootdir):
     for x in files:
-        if x != 'EE3.cfg':
+        if x not in exceptions_exclude:
             if x.endswith('cfg') or x.endswith('conf'):
                 configs.append(os.path.join(root, x))
-            if x == 'TinkersWorkshop.txt':
+            if x in exceptions_include:
                 configs.append(os.path.join(root, x))
 
 
