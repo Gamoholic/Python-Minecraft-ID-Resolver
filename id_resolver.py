@@ -6,32 +6,45 @@ from operator import itemgetter
 
 rootdir = 'config'
 configs = []
-exceptions_exclude = ['EE3.cfg']
-exceptions_include = ['TinkersWorkshop.txt']
+
+# Use these 2 to add special cases
+configs_exclude = ['EE3.cfg']
+configs_include = ['TinkersWorkshop.txt']
 
 # Super mega sexy file list generator
 for root, subFolders, files in os.walk(rootdir):
     for x in files:
-        if x not in exceptions_exclude:
+        if x not in configs_exclude:
             if x.endswith('cfg') or x.endswith('conf'):
                 configs.append(os.path.join(root, x))
-            if x in exceptions_include:
+            if x in configs_include:
                 configs.append(os.path.join(root, x))
+
 
 
 
 def build_list(regex_string, open_file, config_name):
     regex = regex_string + ' \{.*?\}'
+    
+    # Find the "block" or "item" section
+    # re.DOTALL ignores newlines
     list_search = re.search(regex, open_file, re.DOTALL)
     if list_search != None:
         list_search_group = list_search.group()
         list_findall = re.findall('I\:.*', list_search_group)
+        
+        # Split the IDs into name and ID number
+        # Example: ["I:ID.BioFuel.Still", "2063"]
         list_split = [s.split('=') for s in list_findall]
         list_int = []
+        
+        # Change the datatype for the ID numbers to, well, numbers :P
         for x in list_split:
             temp_list = [x[0], int(x[1])]
             list_int.append(temp_list)
         list_append = []
+        
+        # Add the config name to keep track of which items belong to which config
         for s in list_int:
             s.append(config_name)
             list_append.append(s)
@@ -45,12 +58,24 @@ def build_list(regex_string, open_file, config_name):
 
 def replace_ids(object_name, buffer_amount, round_amount, id_object, this_config):
     if object_name != []:
+        
+        # Iterate over either blocks or items, sorted by ID number
         for x in sorted(object_name, key=itemgetter(1)):
             original = x[0] + '=' + str(x[1])
             replacement = x[0] + '=' + str(id_object)
+            
+            ''' Example:
+                    This:
+                        I:ID.BioFuel.Still=2063
+                    becomes:
+                        I:ID.BioFuel.Still=5000
+            '''
             this_config = re.sub(original, replacement, this_config)
             id_object += 1
+        
+        # Add a buffer to pad for the unexpected
         id_object += buffer_amount
+        
         # Round the ID number
         while id_object % round_amount != 0:
             id_object += 1
@@ -61,21 +86,30 @@ def replace_ids(object_name, buffer_amount, round_amount, id_object, this_config
 
 blocks = []
 items = []
+range_list = []
+
+# These 2 control where the IDs start
 id_block = 1000
 id_item = 10000
+
+# These 2 control how much padding is added after each config
 buffer_block = 20
 buffer_item = 255
+
+# These 2 control what the IDs are rounded to
 round_block = 20
 round_item = 100
-range_list = []
 
 print "Configs to check:"
 print
 
+# The Main Loop
 for config in sorted(configs, key=itemgetter(2)):
     the_open_config = open(config, 'rU')
     open_config = the_open_config.read()
-
+    
+    # The Exceptions
+    # I plan to clean this up soon. Any ideas are very welcome
     if config == "config/OpenPeripheral.cfg":
         blocks = build_list("blocks", open_config, config)
         items = build_list("items", open_config, config)
@@ -99,6 +133,8 @@ for config in sorted(configs, key=itemgetter(2)):
             items.append(tool_part)
         for tool in build_list("tools", open_config, config):
             items.append(tool)
+    
+    # Build the ID lists
     else:
         blocks = build_list("block", open_config, config)
         items = build_list("item", open_config, config)
@@ -106,11 +142,13 @@ for config in sorted(configs, key=itemgetter(2)):
     id_block_start = id_block
     id_item_start = id_item
     
+    # Replace the IDs
     if blocks != []:
         open_config, id_block = replace_ids(blocks, buffer_block, round_block, id_block, open_config)
     if items != []:
         open_config, id_item = replace_ids(items, buffer_item, round_item, id_item, open_config)
     
+    # Build the ID range lists
     if id_block_start == id_block:
         range_list_block = ""
     else:
@@ -119,8 +157,11 @@ for config in sorted(configs, key=itemgetter(2)):
         range_list_item = ""
     else:
         range_list_item = str(id_item_start) + '-' + str(id_item)
-        
+    
+    # Build the CSV-ready range list section    
     range_list.append(config + ', ' + range_list_block + ', ' + range_list_item)
+    
+    # Write the updated config
     the_open_config.close()
     config_to_write = open(config, 'w')
     config_to_write.write(open_config)
