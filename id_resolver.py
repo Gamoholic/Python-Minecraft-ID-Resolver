@@ -1,7 +1,9 @@
 #!/usr/bin/env python
-import re, os
+import re, os, sys
 from operator import itemgetter
 
+
+SCAN = sys.argv[1]
 
 
 rootdir = 'config'
@@ -65,9 +67,9 @@ def replace_ids(object_name, buffer_amount, round_amount, id_object, this_config
             replacement = x[0] + '=' + str(id_object)
             
             ''' Example:
-                    This:
+                    original:
                         I:ID.BioFuel.Still=2063
-                    becomes:
+                    replacement:
                         I:ID.BioFuel.Still=5000
             '''
             this_config = re.sub(original, replacement, this_config)
@@ -162,10 +164,11 @@ for config in sorted(configs, key=itemgetter(2)):
     range_list.append(config + ', ' + range_list_block + ', ' + range_list_item)
     
     # Write the updated config
-    the_open_config.close()
-    config_to_write = open(config, 'w')
-    config_to_write.write(open_config)
-    config_to_write.close()
+    if SCAN != '--scan':
+        the_open_config.close()
+        config_to_write = open(config, 'w')
+        config_to_write.write(open_config)
+        config_to_write.close()
 
 print
 print "ID Ranges:"
