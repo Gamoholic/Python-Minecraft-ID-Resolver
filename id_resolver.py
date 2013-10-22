@@ -61,6 +61,10 @@ def build_list(regex_string, open_file, config_name):
 def replace_ids(object_name, buffer_amount, round_amount, id_object, this_config):
     if object_name != []:
         
+        # Avoid vanilla music discs. They conflict for some reason.
+        while id_object in range(2256, 2268):
+            id_object += 1
+        
         # Iterate over either blocks or items, sorted by ID number
         for x in sorted(object_name, key=itemgetter(1)):
             original = x[0] + '=' + str(x[1])
