@@ -106,7 +106,6 @@ print "Configs to check:"
 print
 
 # The Main Loop
-#for config in sorted(configs, key=itemgetter(2)):
 for config in sorted(configs):
     the_open_config = open(config, 'rU')
     open_config = the_open_config.read()
