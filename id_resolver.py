@@ -139,7 +139,7 @@ for config in sorted(configs):
         special_names = {'"item ids"': "i", '"reactor blocks"': "b"}
     elif config == "config/Reika/GeoStrata.cfg":
         # Some consistancy would be amazing Reika!!!
-        special_names = {'"items ids"': "i", '"rock blocks"': "b"}
+        special_names = {'"item ids"': "i", '"rock blocks"': "b"}
     
     # Build the ID lists
     else:
