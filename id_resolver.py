@@ -3,7 +3,7 @@ import re, os, sys
 from operator import itemgetter
 
 
-SCAN = sys.argv[1]
+SCAN = ""
 
 
 rootdir = 'config'
@@ -106,9 +106,11 @@ print "Configs to check:"
 print
 
 # The Main Loop
-for config in sorted(configs, key=itemgetter(2)):
+#for config in sorted(configs, key=itemgetter(2)):
+for config in sorted(configs):
     the_open_config = open(config, 'rU')
     open_config = the_open_config.read()
+    special_names = {}
     
     # The Exceptions
     # I plan to clean this up soon. Any ideas are very welcome
@@ -127,28 +129,52 @@ for config in sorted(configs, key=itemgetter(2)):
     elif config == "config/TinkersWorkshop.txt":
         blocks = build_list("block", open_config, config)
         items = build_list("item", open_config, config)
-        for equipable in build_list("equipables", open_config, config):
-            items.append(equipable)
-        for pattern in build_list("\"patterns and misc\"", open_config, config):
-            items.append(pattern)
-        for tool_part in build_list("\"tool parts\"", open_config, config):
-            items.append(tool_part)
-        for tool in build_list("tools", open_config, config):
-            items.append(tool)
+        special_names = {'"equipables"': "i", '""paterns and misc""': "i",
+            '""tool parts""': "i", '"tools"': "i"}
+    elif config == "config/Reika/RotaryCraft.cfg":
+        special_names = {'""crafting item ids""': "i", '""item ids""': "i", 
+            '""itemblock ids""': "i", '""resource item ids""': "i", 
+            '""tool item ids""': "i", '""extra block ids""': "b",
+            '""machine blocks""': "b"}
+    elif config == "config/Reika/ReactorCraft.cfg":
+        special_names = {'"item ids"': "i", '"reactor blocks"': "b"}
+    elif config == "config/Reika/GeoStrata.cfg":
+        # Some consistancy would be amazing Reika!!!
+        special_names = {'"items ids"': "i", '"rock blocks"': "b"}
     
     # Build the ID lists
     else:
         blocks = build_list("block", open_config, config)
         items = build_list("item", open_config, config)
     
+    # This handles configs that have multiple ID sections
+    if special_names != {}:
+        for special_name in special_names:
+            for special_list in build_list(special_name, open_config, config):
+                if special_names[special_name] == "i":
+                    items.append(special_list)
+                else:
+                    blocks.append(special_list)
+    
     id_block_start = id_block
     id_item_start = id_item
     
     # Replace the IDs
+    # Includes special logic to prevent Pam's mods from eating all the IDs
     if blocks != []:
-        open_config, id_block = replace_ids(blocks, buffer_block, round_block, id_block, open_config)
+        if config.startswith("config/PamHC"):
+            open_config, id_block = replace_ids(blocks, 1, 
+                1, id_block, open_config)
+        else:
+            open_config, id_block = replace_ids(blocks, buffer_block, 
+                round_block, id_block, open_config)
     if items != []:
-        open_config, id_item = replace_ids(items, buffer_item, round_item, id_item, open_config)
+        if config.startswith("config/PamHC"):
+            open_config, id_item = replace_ids(items, 1, 
+                1, id_item, open_config)
+        else:
+            open_config, id_item = replace_ids(items, buffer_item, 
+                round_item, id_item, open_config)
     
     # Build the ID range lists
     if id_block_start == id_block:
