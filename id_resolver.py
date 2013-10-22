@@ -61,7 +61,7 @@ def build_list(regex_string, open_file, config_name):
 def replace_ids(object_name, buffer_amount, round_amount, id_object, this_config):
     if object_name != []:
         
-        # Avoid vanilla music discs. They conflict for some reason.
+        # Avoid vanilla music discs.
         while id_object in range(2256, 2268):
             id_object += 1
         
